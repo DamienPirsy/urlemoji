@@ -19,10 +19,10 @@
 
             <div class="row">
                 <div class="card">
-                   <button type="button" onclick="enableLoop('valentine');"></button>
+                   <button type="button" onclick="enableLoop('valentine');">V</button>
                 </div>
                 <div class="card">
-
+                    <button type="button" onclick="enableLoop('game');">G</button>
                 </div>
             </div>
 
@@ -43,19 +43,29 @@
             </ul>
         </footer>
         <script>
-
           let t = null
           let active = null
 
           function enableLoop(loopname) {
+            
             location.hash = '';
+            clearTimeout(t);
+
             switch (loopname) {
               case 'valentine':
                 if (active != 'valentine') {
-                  valentineLoop()
-                  active = 'valentine'
+                  vCounter = 0;
+                  valentine();
+                  active = 'valentine';
                 } else {
-                  clearTimeout(t);
+                  active = null
+                }
+              break;
+              case 'game':
+                if (active != 'game') {
+                  game();
+                  active = 'game';
+                } else {
                   active = null
                 }
               break;
@@ -68,9 +78,29 @@
           /**
           * Valentine
           */
-          function valentineLoop() {
-            t = setTimeout(valentineLoop, 20);
-            location.hash = Math.random();
+          function valentine() {
+            el = ['💋', '▫️', '💕', '💑 ', '️❤️', '💗', '', '😍', '💞']
+            seq = ['0', '01', '011', '0111', '1112', '1121', '1211', '2111', '21113', '11131', '11311', '13111', '4', '8','8','8','6', '5', '6', '5', '6', '5', '6', '7', '7', '7']
+            t = setTimeout(valentine, 600);
+            if (vCounter >= seq.length) {
+              vCounter = 0;
+              clearTimeout(t);
+              return;
+            }
+            let urlString = '';
+            [...seq[vCounter]].forEach(function(number, index) {
+               urlString += el[number]
+            });
+            location.hash = urlString;
+            vCounter++;
+          }
+          /**
+          *
+          */
+          function moon() {
+            t = setTimeout(game, 50);
+            let f = ['🌑', '🌒', '🌓', '🌔', '🌝', '🌖', '🌗', '🌘'];
+            location.hash = f[Math.floor((Date.now()/100)%f.length)];
           }
 
         </script>
