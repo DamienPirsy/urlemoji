@@ -22,8 +22,14 @@
                    <button type="button" onclick="enableLoop('valentine');">V</button>
                 </div>
                 <div class="card">
-                    <button type="button" onclick="enableLoop('game');">G</button>
+                    <button type="button" onclick="enableLoop('moon');">M</button>
                 </div>
+                <div class="card">
+                  <button type="button" onclick="enableLoop('clocks');">C</button>
+               </div>
+               <div class="card">
+                <button type="button" onclick="enableLoop('runner');">R</button>
+             </div>
             </div>
 
             <div class="row">
@@ -61,10 +67,31 @@
                   active = null
                 }
               break;
-              case 'game':
-                if (active != 'game') {
-                  game();
-                  active = 'game';
+              case 'moon':
+                if (active != 'moon') {
+                  moon();
+                  active = 'moon';
+                } else {
+                  active = null
+                }
+              break;
+              case 'clocks':
+                if (active != 'clocks') {
+                  clocks();
+                  active = 'clocks';
+                } else {
+                  active = null
+                }
+              break;
+              case 'runner':
+                if (active != 'runner') {
+
+                  road = Array(50).fill('_');                  
+                  road[0] = '||';
+                  roadLen = road.length;
+                  current = roadLen-1;
+                  runner();
+                  active = 'runner';
                 } else {
                   active = null
                 }
@@ -79,8 +106,8 @@
           * Valentine
           */
           function valentine() {
-            el = ['💋', '▫️', '💕', '💑 ', '️❤️', '💗', '', '😍', '💞']
-            seq = ['0', '01', '011', '0111', '1112', '1121', '1211', '2111', '21113', '11131', '11311', '13111', '4', '8','8','8','6', '5', '6', '5', '6', '5', '6', '7', '7', '7']
+            el = ['💋', '▫️', '💕', '💑', '💗', '', '😍', '💞']
+            seq = ['0', '01', '011', '01111', '11112', '11121', '11211', '12111', '21113', '11131', '11311', '13111', '7','7','7','5', '4', '5', '4', '5', '4', '5', '6', '6', '6']
             t = setTimeout(valentine, 600);
             if (vCounter >= seq.length) {
               vCounter = 0;
@@ -98,9 +125,40 @@
           *
           */
           function moon() {
-            t = setTimeout(game, 50);
-            let f = ['🌑', '🌒', '🌓', '🌔', '🌝', '🌖', '🌗', '🌘'];
+            t = setTimeout(moon, 50);
+            let f = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
             location.hash = f[Math.floor((Date.now()/100)%f.length)];
+          }
+
+          function clocks() {
+            t = setTimeout(clocks, 1000);
+            let f = ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛'];
+            //console.log(Math.floor((Date.now()/1000)%f.length));
+            location.hash = f[Math.floor((Date.now()/1000)%f.length)];
+          }
+
+          function runner() {
+            t = setTimeout(runner, 100);
+            road[current] = '🏃';
+            if (current < roadLen) {
+              road[0] = '||';
+              road[1] = '_';
+              road[current+1] = '_';
+              
+              //random "monster"
+              //road[getRandomInt(5, current-3)] = '🦀';
+
+              if (current == 0) {
+                road[current] = road[current+1] ='🔥';
+                current = roadLen;
+              }
+            }
+            location.hash = road.join('');
+            current--;
+          }
+
+          function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min) + min);
           }
 
         </script>
