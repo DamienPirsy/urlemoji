@@ -11,25 +11,28 @@
     <body>
         
         <header class="sticky">
-            <a href="#" class="logo">Logo</a>
-            <a href="/" class="button">Home</a>
-            <button>Download</button>
+           <h3>Emojis in URL</h3>
         </header>
         <div class="container">
-
+            <div class="row">
+              <p>Active element: <strong><span id="msgHolder">none</span></strong></p>
+            </div>
             <div class="row">
                 <div class="card">
-                   <button type="button" onclick="enableLoop('valentine');">V</button>
+                   <button type="button" onclick="playExample('valentine', 'Valentine', true);">V</button>
                 </div>
                 <div class="card">
-                    <button type="button" onclick="enableLoop('moon');">M</button>
+                    <button type="button" onclick="playExample('moon', 'Moon');">M</button>
                 </div>
                 <div class="card">
-                  <button type="button" onclick="enableLoop('clocks');">C</button>
+                  <button type="button" onclick="playExample('clocks', 'Clocks');">C</button>
                </div>
                <div class="card">
-                <button type="button" onclick="enableLoop('runner');">R</button>
-             </div>
+                <button type="button" onclick="playExample('runner','Runner', true);">R</button>
+              </div>
+              <div class="card">
+                <button type="button" onclick="enableLoop('weather');">W</button>
+              </div>
             </div>
 
             <div class="row">
@@ -42,56 +45,163 @@
         <footer class="sticky">
             <p>Credits:</p>
             <ul>
-              <li>Source article - http://matthewrayfield.com/articles/animating-urls-with-javascript-and-emojis </li>
-              <li>List of all emoji for JavaScript - https://raw.githubusercontent.com/paragbhadoria/emoji.json/master/emoji.js</li>
-              <li>Mini.css - https://minicss.org/docs#grid</li>
-              <li>1 line ascii art - https://1lineart.kulaone.com/#/</li>
+              <li>Source article - <a target="_blank" href="http://matthewrayfield.com/articles/animating-urls-with-javascript-and-emojis">http://matthewrayfield.com/articles/animating-urls-with-javascript-and-emojis</a> </li>
+              <li>Mini.css - <a href="https://minicss.org/docs" target="_blank">https://minicss.org/docs</a></li>
+              <li>My italian blog - <a href="https://www.matteovignoli.it" target="_blank">https://www.matteovignoli.it</a></li>
             </ul>
         </footer>
+
         <script>
           let t = null
           let active = null
+          let current = 0
+          const msgHolder = document.getElementById('msgHolder')
+          
+          setToast = (msg) => {
+            msgHolder.innerHTML = msg
+          }
+          clearToast = () =>  {
+            setToast('none');
+          }
+          manageCurrent = (len) => {            
+            current = (current >= len-1) ? 0 : current+1;
+          }
 
-          function enableLoop(loopname) {
-            
+          playExample = (fun, name, rst = false) => {
             location.hash = '';
             clearTimeout(t);
+            clearToast();
+            current = 0;
+            if(active != fun) {
+              setToast(name);
+              active = fun;
+
+              // different handling
+              if (fun == 'runner') {
+                road = Array(30).fill('_');
+                //road[0] = '||';
+                roadLen = road.length;
+                current = roadLen-1;
+              }
+              window[fun](rst);
+
+            } else {
+              active = null;
+              clearToast();
+            }
+          }
+
+          /**
+          * Run moon course simulation. Frequency: 1s
+          */
+          moon = (rst) => {
+            let f = ['🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘','🌑'];
+            manageCurrent(f.length);
+            location.hash = f[current]
+            t = setTimeout(moon, rst, 1000);
+          }
+
+          /**
+          * This works slightly differently
+          */
+          runner = (rst) =>  {
+            if (current < roadLen) {
+
+              if (current == 0) {                
+                road[0] = '🔥';
+                road[current+1] = '_';
+                current = roadLen;
+                if (rst) {
+                  location.hash = road.join('');
+                  clearTimeout(t);
+                  return;
+                }
+              } else {
+                road[0] = '||';
+                road[current] = '🏃';
+                road[current+1] = '_';
+              }
+            }
+            
+            location.hash = road.join('');
+            current--;
+            t = setTimeout(runner, rst, 150);            
+          }
+
+          /**
+          * Clock ticking, 1 sec = 1 hour
+          */
+          clocks = (rst) => {
+            let f = ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛'];
+            manageCurrent(f.length)
+            location.hash = f[current];
+            t = setTimeout(clocks, rst, 1000);
+          }
+
+          /**
+          * Silly hearts and kisses
+          */
+          valentine = (rst) =>  {
+            el = ['💋', '▫️', '💕', '💑', '💗', '', '😍', '💞']
+            seq = ['0', '01', '011', '01111', '11112', '11121', '11211', '12111', '21113', '11131', '11311', '13111', '7','7','7','5', '4', '5', '4', '5', '4', '5', '6', '6', '6']
+            manageCurrent(seq.length)
+
+            // return if said to reset
+            if (rst && current == seq.length-1) {
+              clearTimeout(t);
+              location.hash = '';
+              return;
+            }
+
+            let urlString = '';
+            [...seq[current]].forEach(function(number, index) {
+               urlString += el[number]
+            });
+            location.hash = urlString;
+            t = setTimeout(valentine, rst, 400);            
+          }
+
+
+
+          /*playExample = (name) => {
+            //reset everything
+            location.hash = '';
+            clearTimeout(t);
+            clearToast();
+            current = 0;
+
+            switch (name) {
+              case 'moon':
+                runIfActive('moon', 'Moon');
+                break;
+              case 'clocks':
+                runIfActive('clocks', 'Clocks');
+                break;
+            }
+
+          }*/
+
+
+          function sleep(ms){
+            return(
+              new Promise(function(resolve, reject){
+                setTimeout(function() { resolve(); }, ms);
+              })
+            );
+          }
+
+          function enableLoop(loopname) {
+
+            location.hash = '';
+            clearTimeout(t);
+            clearToast();
+            current = 0;
 
             switch (loopname) {
-              case 'valentine':
-                if (active != 'valentine') {
-                  vCounter = 0;
-                  valentine();
-                  active = 'valentine';
-                } else {
-                  active = null
-                }
-              break;
-              case 'moon':
-                if (active != 'moon') {
-                  moon();
-                  active = 'moon';
-                } else {
-                  active = null
-                }
-              break;
-              case 'clocks':
-                if (active != 'clocks') {
-                  clocks();
-                  active = 'clocks';
-                } else {
-                  active = null
-                }
-              break;
-              case 'runner':
-                if (active != 'runner') {
-
-                  road = Array(50).fill('_');                  
-                  road[0] = '||';
-                  roadLen = road.length;
-                  current = roadLen-1;
-                  runner();
-                  active = 'runner';
+              case 'weather':
+                if (active != 'weather') {
+                  weather();
+                  active = 'weather';
                 } else {
                   active = null
                 }
@@ -103,51 +213,16 @@
           }
 
           /**
-          * Valentine
+          * shows a man running into a wall
           */
-          function valentine() {
-            el = ['💋', '▫️', '💕', '💑', '💗', '', '😍', '💞']
-            seq = ['0', '01', '011', '01111', '11112', '11121', '11211', '12111', '21113', '11131', '11311', '13111', '7','7','7','5', '4', '5', '4', '5', '4', '5', '6', '6', '6']
-            t = setTimeout(valentine, 600);
-            if (vCounter >= seq.length) {
-              vCounter = 0;
-              clearTimeout(t);
-              return;
-            }
-            let urlString = '';
-            [...seq[vCounter]].forEach(function(number, index) {
-               urlString += el[number]
-            });
-            location.hash = urlString;
-            vCounter++;
-          }
-          /**
-          *
-          */
-          function moon() {
-            t = setTimeout(moon, 50);
-            let f = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
-            location.hash = f[Math.floor((Date.now()/100)%f.length)];
-          }
-
-          function clocks() {
-            t = setTimeout(clocks, 1000);
-            let f = ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛'];
-            //console.log(Math.floor((Date.now()/1000)%f.length));
-            location.hash = f[Math.floor((Date.now()/1000)%f.length)];
-          }
-
-          function runner() {
-            t = setTimeout(runner, 100);
+         /* function runner() {
+            t = setTimeout(runner, 50);
             road[current] = '🏃';
             if (current < roadLen) {
               road[0] = '||';
               road[1] = '_';
               road[current+1] = '_';
-              
-              //random "monster"
-              //road[getRandomInt(5, current-3)] = '🦀';
-
+                            
               if (current == 0) {
                 road[current] = road[current+1] ='🔥';
                 current = roadLen;
@@ -155,7 +230,15 @@
             }
             location.hash = road.join('');
             current--;
+          }*/
+
+          function weather() {
+            let f = ['☀', '☁', '🌤', '⛅', '🌥', '🌦', '🌩', '🌧', '⛈' ];
+            t = setTimeout(weather, 500);
+            location.hash = f[Math.floor((Date.now()/100)%f.length)];
           }
+
+
 
           function getRandomInt(min, max) {
             return Math.floor(Math.random() * (max - min) + min);
