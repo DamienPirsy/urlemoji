@@ -17,14 +17,14 @@ getRandomInt = (min, max) => {
 * Writes the status message
 * @param {string}  msg
 */          
-    setToast = (msg) => {
+setToast = (msg) => {
     msgHolder.innerHTML = msg
 }
 
 /*
 * Clears the status message
 */
-    clearToast = () =>  {
+clearToast = () =>  {
     setToast(' - ');
 }
 
@@ -82,14 +82,15 @@ playExample = (func, name, rst = false) => {
 
         // different handling
         if (func == 'runner') {
-        road = Array(30).fill('_');
-        roadLen = road.length;
-        current = roadLen-1;
+            road = Array(30).fill('_');
+            roadLen = road.length;
+            current = roadLen-1;
         }
 
         window[func](rst);
     } else {
-        active = null;
+        active = null
+        updateBar(0,0)
     }
 }
 
@@ -113,18 +114,18 @@ runner = (rst) =>  {
     if (current < roadLen) {
 
         if (current == 0) {
-        road[0] = '🔥';
-        road[current+1] = '_';
-        current = roadLen;
-        if (rst) {
-            location.hash = road.join('');
-            clearTimeout(t);
-            return;
-        }
+            road[0] = '🔥';
+            road[current+1] = '_';
+            current = roadLen;
+            if (rst) {
+                location.hash = road.join('');
+                clearTimeout(t);
+                return;
+            }
         } else {
-        road[0] = '||';
-        road[current] = '🏃';
-        road[current+1] = '_';
+            road[0] = '||';
+            road[current] = '🏃';
+            road[current+1] = '_';
         }
     }
     location.hash = road.join('');
@@ -178,5 +179,23 @@ weather = (rst) => {
         location.hash = convertSequence(seq[current], el)
     }
     t = setTimeout(weather, rst, getRandomInt(500, 1000));
+    manageCurrent(seq.length)
+}
+
+/**
+ * Small simulation with fixed animation
+ * @param {boolean}  rst
+ */
+space = (rst) => {
+    let seq = ["___________","_⡱_________","__⡱________","__⡱_______⠪","__⡱⠆______⠪","__⡱⠆_⠆___⠪⠪","__⡱_⠆_⠆_⠪⠪⠪","__⡱⠆_⠆_⠆⠪⠪⠪",
+    "__⡱_⠆_⠆_⣝⠪⠪","__⡱__⠆_⠆⠪⠪_","__⡱___⠆_⣝⠪_","__⡱____⠆⠪__","__⡱____⣝___","__⡱________","__⡱_______⢎","__⡱______⢎⢎","__⡱_____⢎⢎⣿",
+    "__⡱⠆____⢎⢎⣿","__⡱⠆⠆__⢎⢎⣿⣏","__⡱⠆⠆__⢎⢎⣿⣏","__⡱⠆_⠆⠆⢎⢎⣿⣏","__⡱_⠆_⠆⢎⢎⣿⣏","__⡱__⠆_⢎⢎⣿⣏","__⡱___⠆⢎⢎⣿⣏","__⡱____⢎⢎⣿⣏","__⡱⠢___⢎⢎⣿⣏",
+    "__⡱⠡⠢__⢎⢎⣿⣏","__⡱_⠡⠢_⢎⢎⣿⣏","__⡱_⡔⠡⠢⢎⢎⣿⣏","__⡱__⡔⠡⢎⢎⣿⣏","__⡱___⡔⢎⢎⣿⣏","__⡱⠶___⢎⢎⣿⣏","__⡱⠶⠶__⢎⢎⣿⣏","__⡱_⠶⠶_⢎⢎⣿⣏","__⡱__⠶⠶⢎⢎⣿⣏",
+    "__⡱___⠶⢎⢎⣿⣏","__⡱____⣝⢎⣿⣏","__⡱____⣝⣽⣿⣏","__⡱____⣝⣽⣿⣏","__⡱____⣓⣽⣿⢯","__⡱____⣣⣽⣿⢯","__⡱____⣣⡳⣿⣣","__⡱____⣣⡳⣿⣣","__⡱_____⠷⣿⣣","__⡱_____⠷⣿⠏",
+    "__⡱______⠷⣿","__⡱_______⣿","__⡱________","__⡱________","___⡱_______","____⡱______","_____⡱_____","______⡱____","r______⡱___","er______⡱__","ver______⡱_",
+    "over______⡱","_over______","e_over_____","me_over____","ame_over___","game_over__","_game_over_","_game_over_","___________","___________","_game_over_",
+    "_game_over_","___________","___________","insert_coin","___________", "insert_coin","___________", "insert_coin","___________", "insert_coin"]
+    location.hash = seq[current];
+    t = setTimeout(space, rst, 400);
     manageCurrent(seq.length)
 }
