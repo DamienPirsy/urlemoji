@@ -6,7 +6,6 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mini.css/3.0.1/mini-nord.min.css">
-        <script src="https://raw.githubusercontent.com/paragbhadoria/emoji.json/master/emoji.js"></script>
     </head>
     <body>
         
@@ -14,27 +13,33 @@
            <h3>Emojis in URL</h3>
         </header>
         <div class="container">
-            <div class="row">
-              <p>Reset: <a href="/"><span class="icon-home"></span></a></p>
-              <p>Active element: <strong><span id="msgHolder"> - </span></strong></p>
+            
+          <div class="row">
+              <div class="col-sm"><p><a href="/"><span class="icon-alert"></span> Reset</a></p></div>
             </div>
+            
+            <div class="row">
+              <div class="col-sm"><p>Active sequence: <strong><span id="msgHolder"> - </span></strong></p></div>
+              <progress value="0" max="0" class="primary"></progress>
+            </div>
+
             <div class="row">
                 <div class="card">
-                    <button type="button" onclick="playExample('moon', 'Moon');">Moon</button>
+                    <button type="button" onclick="playExample('moon', 'Moon');">Moon 🌓</button>
                 </div>
                 <div class="card">
-                  <button type="button" onclick="playExample('clocks', 'Clocks');">Clock</button>
+                  <button type="button" onclick="playExample('clocks', 'Clocks');">Clock 🕘</button>
                </div>
                <div class="card">
-                  <button type="button" onclick="playExample('valentine', 'Valentine', true);">Valentine</button>
+                  <button type="button" onclick="playExample('valentine', 'Valentine', true);">Valentine 💞</button>
                </div>
               </div>
               <div class="row">
                <div class="card">
-                <button type="button" onclick="playExample('runner','Runner', true);">Runner</button>
+                <button type="button" onclick="playExample('runner','Runner', true);">Running man 🏃</button>
               </div>
               <div class="card">
-                <button type="button" onclick="playExample('weather', 'Weather');">Weather</button>
+                <button type="button" onclick="playExample('weather', 'Weather');">Weather ⛅</button>
               </div>
               <div class="card">
                 
@@ -59,139 +64,6 @@
               <li>My italian blog - <a href="https://www.matteovignoli.it" target="_blank">https://www.matteovignoli.it</a></li>
             </ul>
         </footer>
-
-        <script>
-          let t = null
-          let active = null
-          let current = 0
-          const msgHolder = document.getElementById('msgHolder')
-          
-          setToast = (msg) => {
-            msgHolder.innerHTML = msg
-          }
-
-          clearToast = () =>  {
-            setToast(' - ');
-          }
-
-          manageCurrent = (len) => {            
-            current = (current >= len-1) ? 0 : current+1;
-          }
-
-
-          playExample = (fun, name, rst = false) => {            
-            location.hash = '';
-            clearTimeout(t);
-            clearToast();
-            current = 0;
-            if(active != fun) {
-              setToast(name);
-              active = fun;
-
-              // different handling
-              if (fun == 'runner') {
-                road = Array(30).fill('_');
-                roadLen = road.length;
-                current = roadLen-1;
-              }
-              window[fun](rst);
-
-            } else {
-              active = null;
-              clearToast();
-            }
-          }
-
-          /**
-          * Run moon course simulation. Frequency: 1s
-          */
-          moon = (rst) => {
-            let f = ['🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘','🌑'];
-            manageCurrent(f.length);
-            location.hash = f[current]
-            t = setTimeout(moon, rst, 1000);
-          }
-
-
-          /**
-          * This works slightly differently
-          */
-          runner = (rst) =>  {
-            if (current < roadLen) {
-
-              if (current == 0) {                
-                road[0] = '🔥';
-                road[current+1] = '_';
-                current = roadLen;
-                if (rst) {
-                  location.hash = road.join('');
-                  clearTimeout(t);
-                  return;
-                }
-              } else {
-                road[0] = '||';
-                road[current] = '🏃';
-                road[current+1] = '_';
-              }
-            }
-
-            location.hash = road.join('');
-            current--;
-            t = setTimeout(runner, rst, 150);            
-          }
-
-          /**
-          * Clock ticking, 1 sec = 1 hour
-          */
-          clocks = (rst) => {
-            let f = ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛'];
-            manageCurrent(f.length)
-            location.hash = f[current];
-            t = setTimeout(clocks, rst, 1000);
-          }
-
-          /**
-          * Silly hearts and kisses
-          */
-          valentine = (rst) =>  {
-            el = ['💋', '▫️', '💕', '💑', '💗', '', '😍', '💞']
-            seq = ['0', '01', '011', '01111', '11112', '11121', '11211', '12111', '21113', '11131', '11311', '13111', '7','7','7','5', '4', '5', '4', '5', '4', '5', '6', '6', '6']
-            
-            // return if told to reset
-            if (rst && current == seq.length-1) {
-              clearTimeout(t);
-              location.hash = '';
-              return;
-            }
-            manageCurrent(seq.length);
-            let urlString = '';
-            [...seq[current]].forEach(function(number, index) {
-               urlString += el[number]
-            });
-            location.hash = urlString;
-            t = setTimeout(valentine, rst, 400);
-          }
-
-          weather = (rst) => {
-            let el = ['___', '☀', '☁', '🌤', '⛅', '🌥', '🌦', '🌩', '🌧', '⛈' ]
-            let seq = ['0001000', '2001000', '2001002', '0201020', '2021202', '2023202', '2223222', '2224222', '2225222', '2226222',
-                       '2286222', '2286822', '2278827', '2728822', '2288822', '2288872', '7288822', '2298922', '2299822', '2289922',
-                       '2288922', '2288822', '2288722', '2288822', '2286822', '2286222', '2226222', '2225222', '2225822', '2225222',
-                       '2224220', '2024220', '2023020', '0203020', '0203000', '2003002', '0001002', '0001000', '0001000', '0001000']
-            manageCurrent(seq.length)
-
-            let urlString = '';
-            [...seq[current]].forEach(function(number, index) {
-              urlString += el[number];
-            });
-            location.hash = urlString;
-            t = setTimeout(weather, rst, getRandomInt(500, 1000));
-          }
-
-          function getRandomInt(min, max) {
-            return Math.floor(Math.random() * (max - min) + min);
-          }
-
-        </script>
+        <script src="assets/main.js"></script>        
     </body>
 </html>
